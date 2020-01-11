@@ -8,7 +8,7 @@ from django.views.generic import (
     DeleteView
 )
 from .models import Post
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 from django.contrib.auth.mixins import LoginRequiredMixin,UserPassesTestMixin
 from django.contrib.auth.models import User
 def home(request):
