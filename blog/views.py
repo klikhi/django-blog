@@ -8,7 +8,7 @@ from django.views.generic import (
     DeleteView
 )
 from .models import Post
-from django.urls import reverse_lazy, reverse
+from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin,UserPassesTestMixin
 from django.contrib.auth.models import User
 def home(request):
@@ -47,7 +47,7 @@ class PostCreateView(LoginRequiredMixin,CreateView):
     fields=['title','content']
     # def get_success_url(self):
     #     return reverse('blog-home')
-    success_url = reverse_lazy('blog-home')
+    # success_url = reverse_lazy('blog-home')
     def form_valid(self,form):
         form.instance.author=self.request.user
         return super().form_valid(form)
@@ -59,7 +59,7 @@ class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 
     def form_valid(self,form):
         form.instance.author = self.request.user
-        return reverse(super().form_valid(form))
+        return super().form_valid(form)
 
     def test_func(self):
         post=self.get_object()
