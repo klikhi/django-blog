@@ -11,6 +11,7 @@ from .models import Post
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin,UserPassesTestMixin
 from django.contrib.auth.models import User
+# from .forms import CommentForm
 def home(request):
     context={
         'posts':Post.objects.all()
@@ -77,6 +78,13 @@ class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
             return True
         return False
 
+# def commentView(request):
+#     if request.method == "POST":
+#         form=CommentForm(request.POST)
+#         if form.is_valid():
+#             form.save()
+#             return redirect('blog-home')
+#     # return render(request,'blog/home.html')
 
 
 
