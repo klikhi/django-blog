@@ -12,7 +12,28 @@
           </div>
           <h2><a class="article-title" href="{% url 'post-detail' post.id %}">{{ post.title }}</a></h2>
           <p class="article-content">{{ post.content }}</p>
-          <hr>          
+          <hr>
+          <form method="POST" action="{% url 'like-post' %}" id="{{post.id}}" class="like-form">
+          {% csrf_token %}
+          <button class="btn btn-primary btn-sm mt-1 mb-1 like-btn{{post.id}}" >
+            {% if request.user not in  post.liked.all %}
+              Like
+            {% else %}
+              Unlike
+            {% endif%}
+          </button>
+        </form>
+        <!-- <strong ><span id="count">0</span> Likes</strong>           -->
+        <strong ><span class="like-count{{post.id}}">{{ post.liked.all.count }}</span> Likes</strong>
+        <hr>
+        <form method="POST" class="post-comment" id ="{{post.id}}">
+          {% csrf_token%}
+          <textarea class="media content-section commentText{{post.id}}" rows="2" cols="75" ></textarea>
+          <button type="submit" class="btn btn-outline-success">Post Comment</button>
+        </form>
+        <a type="button" name="comments" style="margin-left: 475px;color: #008CBA;" id="{{post.id}}">view comments</a>
+        <div class="allComments{{post.id}}">
+        </div>
         </div>
       </article>
     {% endfor %}
@@ -37,3 +58,229 @@
 
     {% endif %}
 {% endblock content %}
+{%load static%}
+{% block javascripts %}
+<script type="text/javascript" src={% static 'blog/jquery.cookie.js' %}></script>
+<script>
+
+  $(document).ready(function(){
+    var csrftoken = $.cookie('csrftoken');
+    function csrfSafeMethod(method) {
+        // these HTTP methods do not require CSRF protection
+        return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+    }
+    //csrf config ends
+
+    //config ajax with csrf
+    $.ajaxSetup({
+        beforeSend: function(xhr, settings) {
+            if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                xhr.setRequestHeader("X-CSRFToken", csrftoken);
+            }
+        }
+    });
+
+    $(".like-form").submit(function(e){
+      e.preventDefault();
+      // console.log("Works")
+      const post_id = $(this).attr("id");
+      // console.log(post_id);
+      // console.log(this);
+      const textValue = $.trim($(`.like-btn${post_id}`).text());
+      // console.log(textValue);
+      const url = $('.like-form').attr("action");
+
+      $.ajax({
+        type: "POST",
+        url: url,
+        data :{
+
+          'post_id':post_id,
+        },
+        success:function(response){
+          // console.log(response);
+          if(response.status==1){
+          if(textValue=='Like')
+            $(`.like-btn${post_id}`).html("Unlike");
+
+          else if(textValue=='Unlike')
+            $(`.like-btn${post_id}`).html("Like");
+
+          $(`.like-count${post_id}`).html(response.count);}
+          else
+          {
+            alert("Please Login");
+          }
+        },
+        error: function(error){
+          console.log("error",error)
+        }
+
+      });
+    });
+
+    $(".post-comment").submit(function(e){
+      e.preventDefault();
+      const post_id = $(this).attr("id");
+      // console.log(post_id);
+      const text = $(`.commentText${post_id}`).val();
+      // console.log(text);
+      
+      $.ajax({
+        type:"POST",
+        url:"comment/",
+        data:{
+          "post_id":post_id,
+          "comment":text,
+          "post_comment":1,
+        },
+        success: function(response){
+          if(response.status==1)
+          {
+            // console.log("Success");
+        $(`.commentText${post_id}`).val("");
+        }
+
+          else
+            alert("Login to comment")
+        },
+        error: function(error){
+          console.log("error",error);
+        }
+      });
+    });
+
+    var flag=0;
+  $(document).on("click","a[name='comments']", function (e){      
+      // console.log(this);
+      
+      const post_id = $(this).attr("id");
+      // console.log(post_id);
+      $.ajax({
+        type: "POST",
+        url:"comment/",
+        data: {
+          "get_comments":1,
+          "post_id":post_id,
+            },
+        success:function(response){
+          // console.log(response);
+
+          var comments = response.comments;
+          // var author = response.author;
+          // var date_posted = response.date_posted;
+          // console.log(comments.author[0]);
+          html_code = "";
+          $.each(comments,function(i,value){
+            // console.log(value);
+
+            html_code+="<hr><img align='left' class='rounded-circle article-img' src="+comments[i].pro_img+"><div class='comment'><p class='text-muted'><a href='user/"+comments[i].author+"'>"+comments[i].author+"</a><span class='text-muted' style='margin-left:300px'>"+comments[i].date_posted+"</span></p><p>"+comments[i].comments+"<p></div><hr>";
+          });
+          if(html_code=="")
+            html_code+="<p class='text-muted'>No Comments, Be the first one to comment</p>"
+
+          
+          $(`.allComments${post_id}`).html(html_code);
+          // $(".post-comment").clearQueue();
+          // $(`.allComments${post_id}`).stop();
+          // if(flag==0)
+          // {
+            // fx.clearQueue();
+            // $(`.allComments${post_id}`).slideToggle({duration:5000,});
+            // e.preventDefault();
+
+            // $(`.allComments${post_id}`).stop();
+            // console.log("Success");
+            // $(`.allComments${post_id}`).stop();
+            // flag=1;
+          // }
+          // else
+          // {
+            // $(`.allComments${post_id}`).slideToggle("slow");
+          //   $(`.allComments${post_id}`).stop();
+          //   flag=0;
+          // }
+          
+         // var flag=0;
+          
+          if(flag==0)
+          {
+            $(`.allComments${post_id}`).slideDown(500);
+            flag=1;
+          }
+          else
+          {
+            $(`.allComments${post_id}`).slideUp(500);
+            flag=0;
+          }
+         // console.log(response); 
+        },
+        error: function(){
+          console.log("ERROR")
+        }
+    });
+  });
+
+
+  });
+    
+    // ajax config ends
+    
+  
+</script>
+{% endblock javascripts %}  
+<!-- 
+
+
+  // $("#likebtn").on("click",function(){
+  //     id = this.value;
+  //     console.log(id);
+  //           $.ajax({
+  //       type: "POST",
+  //       url:"like/",
+  //       data: {
+  //               'post_id':id,
+  //               'ajax':1,
+  //               'like': 1
+  //           },
+  //       success:function(response){
+  //           if(response.status==1){
+  //             // $("#count").html(response.count);
+  //             console.log("done");
+  //           }
+  //           else{
+  //             console.log("internal error in except block")
+  //           }
+  //       },
+  //       error: function(){
+  //         console.log("ERROR")
+  //       }
+  //   });
+  // });
+
+  // $("#unlikebtn").on("click",function(){
+  //     id = this.value;
+  //     console.log(id);
+  //           $.ajax({
+  //       type: "POST",
+  //       url:"like/",
+  //       data: {
+  //               'post_id':id,
+  //               'ajax':1,
+  //               'unlike': 1
+  //           },
+  //       success:function(response){
+  //           if(response.status==1){
+  //             // $("#count").html(response.count);
+  //             console.log("done");
+  //           }
+  //           else{
+  //             console.log("internal error in except block")
+  //           }
+  //       },
+  //       error: function(){
+  //         console.log("ERROR")
+  //       }
+  //   });
+  // });
+ -->

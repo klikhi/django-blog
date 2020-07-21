@@ -4,7 +4,8 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
+    <!-- Jquery -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
   <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <link rel="stylesheet" type="text/css" href="{% static 'blog/main.css' %}">
@@ -60,9 +61,9 @@
             <h3>Our Sidebar</h3>
             <p class='text-muted'>You can put any information here you'd like.
               <ul class="list-group">
-                <li class="list-group-item list-group-item-light">Latest Posts</li>
-                <li class="list-group-item list-group-item-light">Announcements</li>
-                <li class="list-group-item list-group-item-light">Calendars</li>
+                <li class="list-group-item list-group-item-light"><a style='color:#008CBA' type="button" class="btn posts " data-toggle="modal" data-target="#exampleModal">Latest Posts</a></li>
+                <li class="list-group-item list-group-item-light"><a style='color:#008CBA'type="button" class="btn ann " data-toggle="modal" data-target="#exampleModal">Announcements</a></li>
+                <li class="list-group-item list-group-item-light"><a style='color:#008CBA' type="button" class="btn drafts" data-toggle="modal" data-target="#exampleModal">Drafts</a></li>
                 <li class="list-group-item list-group-item-light">etc</li>
               </ul>
             </p>
@@ -70,11 +71,124 @@
         </div>
       </div>
     </main>
-    <!-- Optional JavaScript -->
+    {% block modals%}{%endblock modals%}
+    <div class="modal fade" id="draftBodyModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Announcements</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>No Latest Announcements...</p>
+      </div>
+     <!--  <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Save changes</button>
+      </div> -->
+    </div>
+  </div>
+</div>
+        <!-- Javascript -->
+        <script type="text/javascript" src={% static "blog/jquery.cookie.js" %}></script>
+
+        <script>
+              var csrftoken = $.cookie('csrftoken');
+              function csrfSafeMethod(method) {
+              // these HTTP methods do not require CSRF protection
+              return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+              }
+              //csrf config ends
+
+              //config ajax with csrf
+              $.ajaxSetup({
+              beforeSend: function(xhr, settings) {
+                if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                  xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                }
+              }
+              });
+    //ajax config ends
+
+          $(".ann").on("click", function (e){
+            $(".modal-title").html("Announcements");
+            $(".modal-body").html("No Latest Announcements");
+            $("#draftBodyModal").modal("show");
+          });
+          // $(".drafts").on("click", function (e){
+          //   $(".modal-title").html("Drafts");
+          // //   $(".modal-body").html("No Drafts Saved");
+          // });
+          $(".posts").on("click", function (e){
+            $(".modal-title").html("Latest Posts");
+            $(".modal-body").html("No Latest Posts");
+            $("#draftBodyModal").modal("show");
+          });
+
+          $(".drafts").on("click",function(e){
+            e.preventDefault();
+            $(".modal-title").html("Drafts");
+            $.ajax({
+              type:"POST",
+              url:"/drafts/",
+              data:{
+                "get_draft":1,
+              },
+              success:function(response){
+              drafts = response.posts
+              html_code="";
+              var count = 0
+              $.each(drafts,function(i,value){
+                count = count+1;
+                html_code+='<article class="media content-section"  ><div class="media-body"><h2><p class="article-title" href="">'+drafts[i].title+'</p></h2><p class="article-content">'+drafts[i].content+'</p><hr><button type="button" id="'+drafts[i].post_id+'" class="btn btn-danger deletedraft" >Delete</button><form method="POST" action="/post/new/">{% csrf_token%}<input type="hidden" name="post_id" value="'+drafts[i].post_id+'"><button type="submit" class="btn opendraft btn-primary" id="'+drafts[i].post_id+'">Open in Editor</button></form></div></article>'
+                });
+               if(count==0)
+                $(".modal-body").html("No drafts saved.");
+               else 
+                $(".modal-body").html(html_code);
+              $("#draftBodyModal").modal("show");
+              }
+            });
+
+    
+
+          });
+
+
+            $(document).ready(function () {
+              $(document).on( 'click','.deletedraft', function (e) {
+                // console.log(this);
+                const post_id=$(this).attr("id");
+                // console.log(post_id);
+                $.ajax({
+                    type:"POST",
+                    url:"/drafts/",
+                    data:{
+                      "post_id":post_id,
+                      "delete_draft":1,
+                      },
+                      success:function(response){
+                        // if(response.status==1)
+                        // console.log("success");
+                        // else
+                          // console.log("ERROR");
+                      },
+                      error:function(){
+                        console.log("ERROR");
+                      }
+                  });
+                });
+                });
+       
+                
+           
+        </script>
+    {% block javascripts %}{% endblock javascripts %}
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-  </body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
   </body>
 </html>

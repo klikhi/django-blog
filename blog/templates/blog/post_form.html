@@ -12,7 +12,76 @@
         </fieldset>
         <div class="form-group">
           <button class="btn btn-outline-info" type='submit'>Post</button>
+          <button class="btn btn-outline-info draft" >Draft</button>
         </div>
       </form>
     </div>
+    
+
 {% endblock content %}
+{%block modals%}
+    <div class="modal draftModal fade" id="DraftStatusModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title draftId">Announcements</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body ">
+        <p class="draftStatus"></p>
+      </div>
+      <!-- <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Save changes</button>
+      </div> -->
+    </div>
+  </div>
+</div>
+{% endblock modals%}
+{% block javascripts %}
+<script type="text/javascript">
+  $(".draft").on("click",function(e){
+    e.preventDefault();
+    var title = $(".textinput").val();
+    var content = $(".textarea").val();
+    // console.log(title);
+    // console.log(content);
+    $.ajax({
+      type:"POST",
+      url:"/drafts/",
+      data:{
+        "title":title,
+        "content":content,
+        "save_draft":1,
+      },
+      success: function(response){
+        if(response.status==1)
+        {
+          $(".draftId").html("Draft Status");
+            $(".draftStatus").html("Draft Saved");
+            $("#DraftStatusModal").modal("show");
+        }
+        else if(response.status==6)
+        {
+          $(".draftId").html("Draft Status");
+            $(".draftStatus").html("You cannot store more than 5 drafts");
+            $(".draftModal").modal("show");
+        }
+        else if(response.status==0)
+        {
+          $(".draftId").html("Draft Status");
+            // $(".draftStatus").html("Draft could not be saved, please try again after some time");
+            $(".draftModal").modal("show"); 
+        }
+      },
+      error: function(){
+        console.log("error");
+      }
+
+    });    
+  });
+
+</script>
+{% endblock javascripts %}
