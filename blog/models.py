@@ -10,7 +10,7 @@ class Post(models.Model):
     author=models.ForeignKey(User,on_delete=models.CASCADE,related_name='author')
     liked = models.ManyToManyField(User, default=None, blank=True,related_name='liked')
     comments=models.ManyToManyField(User,default=None,blank=True,related_name='comments')
-    draft=models.BooleanField(default=False)
+    draft=models.BooleanField(default=False,null=True)
     def __str__(self):
         return self.title
 
