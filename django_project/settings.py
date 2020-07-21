@@ -15,18 +15,16 @@ import django_heroku
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'django_project.settings')
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('SECRET_KEY')
+SECRET_KEY = "08739e524613598e7d34cc5e5359f52e4e8ae9e7f255d43e"#os.environ.get("SECRET_KEY")
 
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # DEBUG =  (os.environ.get("DEBUG_VALUE") == "True")
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ["https://blogappbyketan.herokuapp.com/"]
 
