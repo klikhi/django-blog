@@ -24,7 +24,7 @@ SECRET_KEY = "08739e524613598e7d34cc5e5359f52e4e8ae9e7f255d43e"#os.environ.get("
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # DEBUG =  (os.environ.get("DEBUG_VALUE") == "True")
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ["https://blogappbyketan.herokuapp.com/"]
 
