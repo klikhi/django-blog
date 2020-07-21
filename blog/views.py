@@ -111,34 +111,48 @@ class PostCreateView(LoginRequiredMixin,CreateView):
     # def get_success_url(self):
     #     return reverse('blog-home')
     # success_url = reverse_lazy('blog-home')
-    def form_valid(self,form):
-        form.instance.author=self.request.user
-        return super().form_valid(form)
-        def get_initial(self):
-            return {}
+    # def form_valid(self,form):
+    #     form.instance.author=self.request.user
+    #     return super().form_valid(form)
+    #     def get_initial(self):
+    #         return {}
 
     def post(self, request, *args, **kwargs):
         post_id = request.POST.get("post_id")
-        post_obj = Post.objects.get(id=post_id)
-        title = post_obj.title
-        content = post_obj.content
-        # print("In post")
-        # initial_base = self.get_initial()
-        # initial_base['title']=title
-        # initial_base['content']=content
-        form_class=self.get_form_class()
-        draft_form = form_class(instance=post_obj)
-        # print(draft_form)
-        # form=self.get_form(form_class)
-        # print(form)
-        # print(initial_base['content'])
-        # form.title =title
-        # form.content=content
-        # print(form.title)
-        # return HttpResponse()
-        # print(form)
-        context = {'form':draft_form}
-        return render(request,"blog/post_form.html",context)
+        print(post_id)
+        if post_id != None:
+            post_obj = Post.objects.get(id=post_id)
+            title = post_obj.title
+            content = post_obj.content
+            # print("In post")
+            # initial_base = self.get_initial()
+            # initial_base['title']=title
+            # initial_base['content']=content
+            form_class=self.get_form_class()
+            draft_form = form_class(instance=post_obj)
+            # print(draft_form)
+            # form=self.get_form(form_class)
+            # print(form)
+            # print(initial_base['content'])
+            # form.title =title
+            # form.content=content
+            # print(form.title)
+            # return HttpResponse()
+            # print(form)
+            context = {'form':draft_form}
+            return render(request,"blog/post_form.html",context)
+        else:
+            form = self.get_form()
+            if form.is_valid():
+                form.instance.author=self.request.user
+                return super().form_valid(form)
+            else:
+                self.object=None
+                return self.form_invalid(form)
+
+
+
+
 
     # template_name=<modelname>_<form>
 
