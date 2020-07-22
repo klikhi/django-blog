@@ -212,36 +212,39 @@ def commentView(request):
 def drafts(request):
     user=request.user
     if request.method=="POST":
-        if "save_draft" in request.POST:
-            title = request.POST.get("title")
-            content=request.POST.get("content")
-            draft_count=Post.objects.filter(author_id=user,draft=1).count()
-            # print(draft_count)
-            if draft_count<=5:
+        if user.is_authenticated:
+            if "save_draft" in request.POST:
+                title = request.POST.get("title")
+                content=request.POST.get("content")
+                draft_count=Post.objects.filter(author_id=user,draft=1).count()
+                # print(draft_count)
+                if draft_count<=5:
 
-                post = Post(title=title,content=content,author=user,draft=True)
-                # print("check")
-                post.save()
-                # print("success")
-                return JsonResponse({'status':1})
-            elif draft_count>5:
-                return JsonResponse({'status':6})
-            else:
-                return JsonResponse({'status':0})
+                    post = Post(title=title,content=content,author=user,draft=True)
+                    # print("check")
+                    post.save()
+                    # print("success")
+                    return JsonResponse({'status':1})
+                elif draft_count>5:
+                    return JsonResponse({'status':6})
+                else:
+                    return JsonResponse({'status':0})
 
-        if "get_draft" in request.POST:
-            posts = Post.objects.filter(author=user,draft=True)
-            response={'posts':[]}
-            for post in posts:
-                response["posts"].append({"content":post.content,"title":post.title,"post_id":post.id})
-            return JsonResponse(response)
+            if "get_draft" in request.POST:
+                posts = Post.objects.filter(author=user,draft=True)
+                response={'posts':[]}
+                for post in posts:
+                    response["posts"].append({"content":post.content,"title":post.title,"post_id":post.id})
+                return JsonResponse(response)
 
 
-        if "delete_draft" in request.POST:
-            post_id=request.POST.get("post_id")
-            Post.objects.filter(id=post_id).delete()
-            # return JsonResponse({"status":1})
-            return render(request,"blog/home.html",{})
+            if "delete_draft" in request.POST:
+                post_id=request.POST.get("post_id")
+                Post.objects.filter(id=post_id).delete()
+                # return JsonResponse({"status":1})
+                return render(request,"blog/home.html",{})
+        else :
+            return JsonResponse({'status':-1})
 
         return HttpResponse()
 

@@ -138,18 +138,26 @@
                 "get_draft":1,
               },
               success:function(response){
-              drafts = response.posts
-              html_code="";
-              var count = 0
-              $.each(drafts,function(i,value){
-                count = count+1;
-                html_code+='<article class="media content-section"  ><div class="media-body"><h2><p class="article-title" href="">'+drafts[i].title+'</p></h2><p class="article-content">'+drafts[i].content+'</p><hr><button type="button" id="'+drafts[i].post_id+'" class="btn btn-danger deletedraft" >Delete</button><form style="display:inline" method="POST" action="/post/new/">{% csrf_token%}<input type="hidden" name="post_id" value="'+drafts[i].post_id+'"><button type="submit" class="btn opendraft btn-primary" id="'+drafts[i].post_id+'">Open in Editor</button></form></div></article>'
-                });
-               if(count==0)
-                $(".modal-body").html("No drafts saved.");
-               else 
-                $(".modal-body").html(html_code);
-              $("#draftBodyModal").modal("show");
+                if(response.status!=-1){
+                                drafts = response.posts
+                html_code="";
+                var count = 0
+                $.each(drafts,function(i,value){
+                  count = count+1;
+                  html_code+='<article class="media content-section"  ><div class="media-body"><h2><p class="article-title" href="">'+drafts[i].title+'</p></h2><p class="article-content">'+drafts[i].content+'</p><hr><button type="button" id="'+drafts[i].post_id+'" class="btn btn-danger deletedraft" >Delete</button><form style="display:inline" method="POST" action="/post/new/">{% csrf_token%}<input type="hidden" name="post_id" value="'+drafts[i].post_id+'"><button type="submit" class="btn opendraft btn-primary" id="'+drafts[i].post_id+'">Open in Editor</button></form></div></article>'
+                  });
+                if(count==0)
+                  $(".modal-body").html("No drafts saved.");
+                else 
+                  $(".modal-body").html(html_code);
+                  $("#draftBodyModal").modal("show");
+                }
+                else if(response.status==-1)
+                {
+                  $(".modal-body").html("Please login to view your saved drafts...");
+                  $("#draftBodyModal").modal("show"); 
+                }
+
               }
             });
 
