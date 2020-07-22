@@ -3,7 +3,7 @@
 {% block content %}
     <!-- <h1>Blog Home !</h1> -->
     {% for post in posts %}
-      <article class="media content-section">
+      <article class="media content-section"  style="display: inline-flex">
         <img class="rounded-circle article-img" src="{{post.author.profile.image.url}}" alt="">
         <div class="media-body">
           <div class="article-metadata">
@@ -11,7 +11,7 @@
             <small class="text-muted">{{ post.date_posted |date:"F d, Y"}}</small>
           </div>
           <h2><a class="article-title" href="{% url 'post-detail' post.id %}">{{ post.title }}</a></h2>
-          <p class="article-content">{{ post.content }}</p>
+          <p class="article-content"  >{{ post.content }}</p>
           <hr>
           <form method="POST" action="{% url 'like-post' %}" id="{{post.id}}" class="like-form">
           {% csrf_token %}
@@ -28,7 +28,7 @@
         <hr>
         <form method="POST" class="post-comment" id ="{{post.id}}">
           {% csrf_token%}
-          <textarea class="media content-section commentText{{post.id}}" rows="2" cols="75" ></textarea>
+          <textarea class="media content-section  commentText{{post.id}}" rows="2" cols="75" ></textarea>
           <button type="submit" class="btn btn-outline-success">Post Comment</button>
         </form>
         <a type="button" name="comments" style="margin-left: 475px;color: #008CBA;" id="{{post.id}}">view comments</a>
