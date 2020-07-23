@@ -1,7 +1,9 @@
+
 body {
   background: #fafafa;
   color: #333333;
   margin-top: 5rem;
+  background-image: url("/media/bgimg.jpg");
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -16,7 +18,8 @@ ul {
 }
 
 .bg-steel {
-  background-color: #5f788a;
+  /*background-color: #000080;*/
+  background-color:SlateBlue;
 }
 
 .site-header .navbar-nav .nav-link {
@@ -47,6 +50,7 @@ ul {
   border-radius: 3px;
   margin-bottom: 20px;
   float: right;
+  /*position: fixed;*/
 
 }
 

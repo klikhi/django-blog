@@ -3,12 +3,12 @@
 {% block content %}
     <!-- <h1>Blog Home !</h1> -->
     {% for post in posts %}
-      <article class="media content-section"  style="display: inline-flex">
+      <article class="media content-section"  style="display: block;">
         <img class="rounded-circle article-img" src="{{post.author.profile.image.url}}" alt="">
         <div class="media-body">
           <div class="article-metadata">
             <a class="mr-2" href="{% url 'user-posts' post.author.username  %}">{{ post.author }}</a>
-            <small class="text-muted">{{ post.date_posted |date:"F d, Y"}}</small>
+            <small class="text-muted" style="float: right;">{{ post.date_posted |date:"F d, Y"}}</small>
           </div>
           <h2><a class="article-title" href="{% url 'post-detail' post.id %}">{{ post.title }}</a></h2>
           <p class="article-content"  >{{ post.content }}</p>
@@ -31,7 +31,7 @@
           <textarea class="media content-section  commentText{{post.id}}" rows="2" cols="75" ></textarea>
           <button type="submit" class="btn btn-outline-success">Post Comment</button>
         </form>
-        <a type="button" name="comments" style="margin-left: 475px;color: #008CBA;" id="{{post.id}}">view comments</a>
+        <a type="button" name="comments" style="float:right;color:#008CBA;margin-top: -15px" id="{{post.id}}">view comments</a>
         <div class="allComments{{post.id}}">
         </div>
         </div>
