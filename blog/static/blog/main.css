@@ -44,12 +44,13 @@ ul {
 
 }
 .sidebar-section {
+  text-align: center;
   background: #ffffff;
-  padding: 10px 20px;
+  padding: 10px 0px;
   border: 1px solid #dddddd;
   border-radius: 3px;
   margin-bottom: 20px;
-  float: right;
+  /*float: right;*/
   /*position: fixed;*/
 
 }

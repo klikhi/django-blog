@@ -28,7 +28,7 @@
         <hr>
         <form method="POST" class="post-comment" id ="{{post.id}}">
           {% csrf_token%}
-          <textarea class="media content-section  commentText{{post.id}}" rows="2" cols="75" ></textarea>
+          <textarea class="media content-section commentText{{post.id}}" style="width:75%" rows="2" cols="75" ></textarea>
           <button type="submit" class="btn btn-outline-success">Post Comment</button>
         </form>
         <a type="button" name="comments" style="float:right;color:#008CBA;margin-top: -15px" id="{{post.id}}">view comments</a>
